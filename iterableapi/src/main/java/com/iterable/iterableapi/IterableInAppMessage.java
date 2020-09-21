@@ -115,11 +115,13 @@ public class IterableInAppMessage {
         public String html;
         public final Rect padding;
         public final double backgroundAlpha;
+        public boolean shouldAnimate;
 
-        Content(String html, Rect padding, double backgroundAlpha) {
+        Content(String html, Rect padding, double backgroundAlpha, boolean shouldAnimate) {
             this.html = html;
             this.padding = padding;
             this.backgroundAlpha = backgroundAlpha;
+            this.shouldAnimate = shouldAnimate;
         }
 
         @Override
@@ -303,7 +305,7 @@ public class IterableInAppMessage {
         Date expiresAt = expiresAtLong != 0 ? new Date(expiresAtLong) : null;
 
         String html = contentJson.optString(IterableConstants.ITERABLE_IN_APP_HTML, null);
-
+        boolean shouldAnimate = contentJson.optBoolean(IterableConstants.ITERABLE_IN_APP_DEFAULT_ANIMATION, true);
         JSONObject paddingOptions = contentJson.optJSONObject(IterableConstants.ITERABLE_IN_APP_DISPLAY_SETTINGS);
         Rect padding = getPaddingFromPayload(paddingOptions);
         double backgroundAlpha = contentJson.optDouble(IterableConstants.ITERABLE_IN_APP_BACKGROUND_ALPHA, 0);
@@ -324,7 +326,7 @@ public class IterableInAppMessage {
 
         IterableInAppMessage message = new IterableInAppMessage(
                 messageId,
-                new Content(html, padding, backgroundAlpha),
+                new Content(html, padding, backgroundAlpha, shouldAnimate),
                 customPayload,
                 createdAt,
                 expiresAt,
