@@ -4,11 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.iid.FirebaseInstanceId;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -92,12 +88,8 @@ class IterablePushRegistration extends AsyncTask<IterablePushRegistrationData, V
 
                     // We disable the device on Iterable but keep the token
                     if (oldToken != null) {
-                        IterableApi.sharedInstance.disableToken(iterablePushRegistrationData.email, iterablePushRegistrationData.userId, oldToken, new IterableHelper.SuccessHandler() {
-                            @Override
-                            public void onSuccess(@NonNull JSONObject data) {
-                                sharedPref.edit().putBoolean(IterableConstants.SHARED_PREFS_FCM_MIGRATION_DONE_KEY, true).apply();
-                            }
-                        }, null);
+                        IterableApi.sharedInstance.disableToken(iterablePushRegistrationData.email, iterablePushRegistrationData.userId, oldToken,
+                                data -> sharedPref.edit().putBoolean(IterableConstants.SHARED_PREFS_FCM_MIGRATION_DONE_KEY, true).apply(), null);
                     }
                 }
             }

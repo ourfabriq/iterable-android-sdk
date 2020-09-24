@@ -388,12 +388,9 @@ private static final String TAG = "IterableApi";
     public static boolean handleAppLink(@NonNull String uri) {
         IterableLogger.printInfo();
         if (IterableDeeplinkManager.isIterableDeeplink(uri)) {
-            IterableDeeplinkManager.getAndTrackDeeplink(uri, new IterableHelper.IterableActionHandler() {
-                @Override
-                public void execute(String originalUrl) {
-                    IterableAction action = IterableAction.actionOpenUrl(originalUrl);
-                    IterableActionRunner.executeAction(getInstance().getMainActivityContext(), action, IterableActionSource.APP_LINK);
-                }
+            IterableDeeplinkManager.getAndTrackDeeplink(uri, originalUrl -> {
+                IterableAction action = IterableAction.actionOpenUrl(originalUrl);
+                IterableActionRunner.executeAction(getInstance().getMainActivityContext(), action, IterableActionSource.APP_LINK);
             });
             return true;
         } else {
@@ -432,11 +429,9 @@ private static final String TAG = "IterableApi";
 
     protected void registerDeviceToken(final @Nullable String email, final @Nullable String userId, final @NonNull String applicationName, final @NonNull String deviceToken, final HashMap<String, String> deviceAttributes) {
         if (deviceToken != null) {
-            final Thread registrationThread = new Thread(new Runnable() {
-                public void run() {
-                    registerDeviceToken(email, userId, applicationName, deviceToken, null, deviceAttributes);
-                }
-            });
+            final Thread registrationThread = new Thread(
+                    () -> registerDeviceToken(email, userId, applicationName, deviceToken, null, deviceAttributes)
+            );
             registrationThread.start();
         }
     }
@@ -603,20 +598,17 @@ private static final String TAG = "IterableApi";
             }
             requestJSON.put(IterableConstants.KEY_NEW_EMAIL, newEmail);
 
-            sendPostRequest(IterableConstants.ENDPOINT_UPDATE_EMAIL, requestJSON, new IterableHelper.SuccessHandler() {
-                @Override
-                public void onSuccess(@NonNull JSONObject data) {
-                    if (_email != null) {
-                        _email = newEmail;
-                    }
-                    if (_authToken != null) {
-                        _authToken = authToken;
-                    }
+            sendPostRequest(IterableConstants.ENDPOINT_UPDATE_EMAIL, requestJSON, data -> {
+                if (_email != null) {
+                    _email = newEmail;
+                }
+                if (_authToken != null) {
+                    _authToken = authToken;
+                }
 
-                    storeAuthData();
-                    if (successHandler != null) {
-                        successHandler.onSuccess(data);
-                    }
+                storeAuthData();
+                if (successHandler != null) {
+                    successHandler.onSuccess(data);
                 }
             }, failureHandler);
         } catch (JSONException e) {
@@ -1461,17 +1453,8 @@ private static final String TAG = "IterableApi";
             JSONObject requestJSON = DeviceInfo.createDeviceInfo(_applicationContext).toJSONObject();
 
             IterableApiRequest request = new IterableApiRequest(_apiKey, IterableConstants.BASE_URL_LINKS,
-                    IterableConstants.ENDPOINT_DDL_MATCH, requestJSON, IterableApiRequest.POST, null, new IterableHelper.SuccessHandler() {
-                @Override
-                public void onSuccess(@NonNull JSONObject data) {
-                    handleDDL(data);
-                }
-            }, new IterableHelper.FailureHandler() {
-                @Override
-                public void onFailure(@NonNull String reason, @Nullable JSONObject data) {
-                    IterableLogger.e(TAG, "Error while checking deferred deep link: " + reason + ", response: " + data);
-                }
-            });
+                    IterableConstants.ENDPOINT_DDL_MATCH, requestJSON, IterableApiRequest.POST, null, data -> handleDDL(data),
+                    (reason, data) -> IterableLogger.e(TAG, "Error while checking deferred deep link: " + reason + ", response: " + data));
             new IterableRequest().execute(request);
 
         } catch (Exception e) {
