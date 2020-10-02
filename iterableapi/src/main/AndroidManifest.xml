@@ -21,6 +21,8 @@
             </intent-filter>
         </receiver>
 
+        <service android:name="com.iterable.iterableapi.IterableRNHeadlessJs" />
+
     </application>
 
 </manifest>
