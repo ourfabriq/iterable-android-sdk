@@ -93,8 +93,8 @@ public class IterablePushActionReceiver extends BroadcastReceiver {
             }
         } else {
             // Fire the headless JS hacked in here
-            Intent serviceIntent = new Intent(context, IterableRNHeadlessJs.class);
-            context.startService(serviceIntent);
+            Intent serviceIntent = new Intent(context.getApplicationContext(), IterableRNHeadlessJs.class);
+            context.getApplicationContext().startService(serviceIntent);
             HeadlessJsTaskService.acquireWakeLockNow(context);
         }
     }
