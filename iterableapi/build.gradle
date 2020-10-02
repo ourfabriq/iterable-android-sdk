@@ -33,6 +33,8 @@ dependencies {
     api 'androidx.annotation:annotation:1.0.0'
     api 'com.google.firebase:firebase-messaging:17.4.0'
 
+    implementation "com.facebook.react:react-native:+"
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:runner:1.2.0'
     testImplementation 'androidx.test.espresso:espresso-core:3.2.0'
