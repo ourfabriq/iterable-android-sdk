@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.core.app.RemoteInput;
 
+import com.facebook.react.HeadlessJsTaskService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -89,6 +91,11 @@ public class IterablePushActionReceiver extends BroadcastReceiver {
             if (launcherIntent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(launcherIntent);
             }
+        } else {
+            // Fire the headless JS hacked in here
+            Intent serviceIntent = new Intent(context, IterableRNHeadlessJs.class);
+            context.startService(serviceIntent);
+            HeadlessJsTaskService.acquireWakeLockNow(context);
         }
     }
 
